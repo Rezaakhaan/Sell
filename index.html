@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0f7b5f">
+<title>ماشین‌حساب قیمت و موجودی</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--text:#1d2320;--muted:#6b746f;--accent:#0f7b5f;--soft:#e1f2ec;--border:#e2e0d8;--warn:#b3402a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121715;--card:#1b2220;--text:#eef2ef;--muted:#98a39d;--accent:#3fc59b;--soft:#1d3a30;--border:#2c3632;--warn:#f08a74}}
+:root[data-theme="dark"]{--bg:#121715;--card:#1b2220;--text:#eef2ef;--muted:#98a39d;--accent:#3fc59b;--soft:#1d3a30;--border:#2c3632;--warn:#f08a74}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Vazirmatn,Tahoma,system-ui,sans-serif;line-height:1.7}
+main{max-width:520px;margin:0 auto;padding:18px 14px 60px}
+h1{font-size:21px;font-weight:800;margin:4px 0 12px}
+h2{font-size:17px;margin:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+label,.lbl{display:block;font-size:13px;color:var(--muted);margin:10px 0 3px}
+input,select{width:100%;font:inherit;font-size:18px;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
+input.n{direction:ltr;text-align:right}
+input:focus,select:focus{outline:2px solid var(--accent);border-color:transparent}
+button{font:inherit;font-size:15px;border-radius:10px;padding:9px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.p{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.seg{display:flex;gap:6px;margin-top:10px}.seg button{flex:1}.seg button.on{background:var(--soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.seg.tb{margin:0 0 12px}.seg.tb button{padding:9px 2px;font-size:14px}
+.sr{display:grid;grid-template-columns:1fr 1fr .8fr 40px;gap:8px;margin-bottom:6px;align-items:center}
+.sell .sr{grid-template-columns:1fr 1fr}
+.tq{font-size:14px;color:var(--muted);margin-top:6px}
+.res{margin-top:14px;background:var(--soft);border-radius:14px;padding:14px;text-align:center}
+.big{font-size:38px;font-weight:800;color:var(--accent);line-height:1.3;direction:ltr}
+.rows{margin-top:10px;border-top:1px dashed var(--border);padding-top:8px;font-size:17px;text-align:right}
+.rows div{display:flex;justify-content:space-between;padding:3px 0}.rows b{direction:ltr}
+.err{color:var(--warn);font-size:15px;text-align:center;margin-top:10px}
+.btns{display:flex;gap:8px;margin-top:12px}.btns .p{flex:1}
+.hd{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px}
+.t{display:flex;justify-content:space-between;font-weight:700;font-size:18px;gap:8px}
+.d{font-size:13px;color:var(--muted);margin-top:2px}
+.cd{font-size:13px;color:var(--muted);font-weight:600;direction:ltr;display:inline-block;background:var(--soft);border-radius:6px;padding:0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--soft);border-radius:8px;padding:2px 8px;font-size:15px}.chip.z{opacity:.45}
+.a{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.a button{padding:6px 12px;font-size:14px}
+.sell{margin-top:10px;border-top:1px dashed var(--border);padding-top:6px}
+.rg{display:grid;grid-template-columns:1.4fr 1fr 1fr .8fr;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:16px}
+.rg.h{color:var(--muted);font-size:13px}.rg.z{opacity:.4}.rg b{direction:ltr;text-align:right}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:10px}
+.card.so{opacity:.85}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:9px 16px;border-radius:12px;font-size:15px;max-width:90%;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+#toast.show{opacity:1}#toast.bad{background:var(--warn);color:#fff}
+</style>
+</head>
+<body>
+<main>
+<h1>ماشین‌حساب قیمت و موجودی</h1>
+<div class="seg tb"><button id="tc" class="on" type="button">ماشین‌حساب</button><button id="tp" type="button">محصولات</button><button id="ts" type="button">فروش‌ها</button><button id="tb" type="button">پشتیبان</button></div>
+
+<div id="tabC">
+<div class="card">
+  <div class="g" style="grid-template-columns:1fr 2fr">
+    <div><label for="code" style="margin-top:0">کد محصول</label><input id="code" class="n" autocomplete="off"></div>
+    <div><label for="name" style="margin-top:0">نام محصول</label><input id="name" autocomplete="off"></div>
+    <input id="color" type="hidden">
+  </div>
+  <div class="lbl">تاریخ خرید (شمسی)</div>
+  <div class="g3"><select id="yy"></select><select id="mm"></select><select id="dd"></select></div>
+
+  <div class="lbl">سایزها و تعداد هر سایز</div>
+  <div id="rows"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><button id="addrow" type="button">＋ افزودن سایز</button><span class="tq" id="tq"></span></div>
+
+  <div class="seg"><button id="m1" class="on" type="button">قیمت تکی</button><button id="m2" type="button">قیمت کلی</button></div>
+  <label id="pl" for="price">قیمت خرید هر عدد (تومان)</label>
+  <input id="price" class="n" inputmode="decimal">
+  <div class="g">
+    <div><label for="ship">هزینه پست کل سفارش</label><input id="ship" class="n" inputmode="decimal"></div>
+    <div><label for="extra">جانبی هر عدد (اختیاری)</label><input id="extra" class="n" inputmode="decimal"></div>
+    <div><label for="margin">سود مارژین (%)</label><input id="margin" class="n" inputmode="decimal" value="20"></div>
+    <div><label for="fee">کارمزد سایت (%)</label><input id="fee" class="n" inputmode="decimal" value="15"></div>
+  </div>
+  <div id="out"></div>
+  <div class="err" id="msg"></div>
+  <div class="btns"><button class="p" id="save" type="button">ذخیره محصول</button><button id="reset" type="button">جدید</button></div>
+</div>
+</div>
+
+<div id="tabP" hidden>
+  <input id="srch" placeholder="جستجوی کد، نام، سایز یا رنگ" style="margin-bottom:8px">
+  <div class="seg" style="margin-top:0"><button id="f1" class="on" type="button">همه</button><button id="f2" type="button">موجود</button><button id="f3" type="button">تمام‌شده</button></div>
+  <div class="hd"><h2>محصولات</h2><button id="repbtn" type="button">گزارش موجودی کل</button></div>
+  <div id="rep"></div>
+  <div id="list"></div>
+</div>
+
+<div id="tabS" hidden>
+  <div class="seg" style="margin-top:0"><button id="sv1" class="on" type="button">تاریخچه فروش</button><button id="sv2" type="button">آمار ماهانه</button></div>
+  <input id="hq" placeholder="جستجوی کد، نام یا سایز در فروش‌ها" style="margin-top:10px">
+  <div id="sOut" style="margin-top:10px"></div>
+</div>
+
+<div id="tabB" hidden>
+<div class="card">
+<div class="btns" style="margin-top:0"><button class="p" id="bk" type="button">دانلود پشتیبان</button><button id="rs" type="button">بازیابی از فایل</button></div>
+<input id="rf" type="file" accept=".json,application/json" style="display:none">
+<div class="tq" id="bm"></div><div class="tq" id="bc"></div><div class="tq" id="ps"></div>
+</div>
+</div>
+</main>
+<div id="toast"></div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var nf=new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+var F=function(n){var v=Math.round(n);if(!isFinite(v))return '0';if(v===0)v=0;return nf.format(v)};
+var MN=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+var items=[],log=[],S={},rows=[{s:'',c:'',q:''}],editId=null,mode='unit',openSell=null,showRep=false,delArm=null,undoArm=null,qry='',flt='all',sv='h',sq='';
+
+function ld(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}}
+function toast(m,bad){var e=$('toast');e.textContent=m;e.className='show'+(bad?' bad':'');clearTimeout(toast.t);toast.t=setTimeout(function(){e.className=''},bad?6000:2200)}
+function persist(){try{localStorage.setItem('fc2_items',JSON.stringify(items));localStorage.setItem('fc2_log',JSON.stringify(log));return true}catch(e){toast('ذخیره نشد! حافظه مرورگر پر یا غیرفعال است. همین حالا پشتیبان بگیر.',1);return false}}
+function lat(s){return String(s==null?'':s).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)}).replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)}).replace(/٫/g,'.').replace(/٬/g,',')}
+function num(s){
+  s=String(s||'').replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)})
+   .replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)})
+   .replace(/[٫]/g,'.').replace(/[,٬،\s]/g,'');
+  return s===''?NaN:Number(s);
+}
+function nz(s){return lat(s).replace(/ي/g,'ی').replace(/ك/g,'ک').toLowerCase().trim()}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function pad(n){return ('0'+n).slice(-2)}
+function uid(){return 's'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
+function valid(x){return x&&x.id&&x.name&&Array.isArray(x.sizes)}
+function validE(e){return e&&e.id&&e.iid!=null&&e.n>0&&isFinite(e.p)&&isFinite(e.c)&&isFinite(e.f)&&typeof e.d==='string'}
+function extraOf(it){var q=0;it.sizes.forEach(function(z){q+=z.q});q=q||1;return (it.ship||0)/q+(it.extra||0)}
+function costOf(it){var q=0;it.sizes.forEach(function(z){q+=z.q});q=q||1;var u=it.mode==='total'?it.pin/q:it.pin;return u+extraOf(it)}
+function left(it,z){return z.q-(it.sold[z.s+'|'+(z.c||'')]||0)}
+function ky(z){return z.s+'|'+(z.c||'')}
+function nextCode(){var m=100;items.forEach(function(x){if(/^\d+$/.test(String(x.code||'')))m=Math.max(m,parseInt(x.code,10))});return String(m+1)}
+function assignCodes(){items.filter(function(x){return !x.code}).sort(function(a,b){return (Number(a.id)||0)-(Number(b.id)||0)}).forEach(function(x){x.code=nextCode()})}
+// تبدیل داده‌های قدیمی: رنگ هر سایز، و انتقال فروش‌های داخل محصول به تاریخچهٔ جدا
+function mig(it,out){
+  var c0=it.color||'',ns={};
+  it.sizes.forEach(function(z){if(z.c==null)z.c=c0});
+  Object.keys(it.sold||{}).forEach(function(k){ns[k.indexOf('|')<0?k+'|'+c0:k]=it.sold[k]});
+  it.sold=ns;it.color='';
+  if(Array.isArray(it.sales)){var c=costOf(it),x=extraOf(it);it.sales.forEach(function(s,i){out.push({id:it.id+'_m'+i,iid:it.id,nm:it.name,cd:it.code||'',d:s.d,n:s.n,p:s.p,c:c,x:x,f:it.f,z:s.z||{}})});delete it.sales}
+}
+items=ld('fc2_items',[]);log=ld('fc2_log',[]);S=ld('fc2_set',{});
+if(!Array.isArray(items))items=[];if(!Array.isArray(log))log=[];if(!S||typeof S!=='object')S={};
+items=items.filter(valid);
+(function(){var out=[],have={};assignCodes();items.forEach(function(it){mig(it,out)});
+  log=log.filter(validE).concat(out.filter(validE)).filter(function(e){if(have[e.id])return false;have[e.id]=1;return true});
+  persist()})();
+
+function todayJ(){
+  var y,m,d;
+  try{new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()).forEach(function(x){
+    if(x.type==='year')y=parseInt(x.value,10);if(x.type==='month')m=parseInt(x.value,10);if(x.type==='day')d=parseInt(x.value,10)})}catch(e){}
+  if(!y||!m||!d){var g=new Date();y=g.getFullYear()-621;m=g.getMonth()+1;d=g.getDate()}
+  return [y,m,d];
+}
+function initDate(){
+  var t=todayJ(),h='',i;
+  for(i=t[0]-2;i<=t[0]+1;i++)h+='<option value="'+i+'">'+i+'</option>';$('yy').innerHTML=h;
+  h='';for(i=0;i<12;i++)h+='<option value="'+(i+1)+'">'+MN[i]+'</option>';$('mm').innerHTML=h;
+  h='';for(i=1;i<=31;i++)h+='<option value="'+i+'">'+i+'</option>';$('dd').innerHTML=h;
+  setDate(t[0]+'/'+pad(t[1])+'/'+pad(t[2]));
+}
+function setDate(s){var p=s.split('/'),y0=parseInt(p[0],10);if(!$('yy').querySelector('option[value="'+y0+'"]')){var o=document.createElement('option');o.value=y0;o.textContent=y0;$('yy').appendChild(o)}$('yy').value=y0;$('mm').value=parseInt(p[1],10);$('dd').value=parseInt(p[2],10)}
+function getDate(){var m=+$('mm').value,d=+$('dd').value;if(m>6&&d>30)d=30;if(m===12&&d>29)d=29;return $('yy').value+'/'+pad(m)+'/'+pad(d)}
+function todayStr(){var t=todayJ();return t[0]+'/'+pad(t[1])+'/'+pad(t[2])}
+function row(a,b){return '<div><span>'+a+'</span><b>'+b+'</b></div>'}
+
+function renderRows(){
+  $('rows').innerHTML=rows.map(function(r,i){
+    return '<div class="sr"><input data-i="'+i+'" data-k="s" placeholder="سایز" value="'+esc(r.s)+'"><input data-i="'+i+'" data-k="c" placeholder="رنگ" value="'+esc(r.c)+'"><input class="n" data-i="'+i+'" data-k="q" inputmode="numeric" placeholder="تعداد" value="'+esc(r.q)+'"><button type="button" data-x="'+i+'">×</button></div>';
+  }).join('');
+}
+function setMode(m){
+  mode=m;$('m1').className=m==='unit'?'on':'';$('m2').className=m==='total'?'on':'';
+  $('pl').textContent=m==='unit'?'قیمت خرید هر عدد (تومان)':'قیمت کل خرید همه عددها (تومان)';calc();
+}
+function compute(){
+  var q=0;rows.forEach(function(r){var n=num(r.q);if(n>0)q+=n});
+  var p=num($('price').value),sh=num($('ship').value),ex=num($('extra').value),m=num($('margin').value),f=num($('fee').value);
+  if(isNaN(sh))sh=0;if(isNaN(ex))ex=0;if(isNaN(f))f=0;
+  if(!(q>0)||isNaN(p)||isNaN(m)||p<0||m<0||f<0||sh<0||ex<0)return null;
+  if(m>=100||f>=100)return {err:'سود و کارمزد باید کمتر از ۱۰۰٪ باشد.'};
+  var unit=mode==='total'?p/q:p,extra=sh/q+ex,p1=unit/(1-m/100),p2=p1+extra,fin=Math.ceil(p2/(1-f/100)-1e-9);
+  return {q:q,p:p,sh:sh,ex:ex,m:m,f:f,unit:unit,extra:extra,p1:p1,p2:p2,fin:fin};
+}
+function calc(){
+  var q=0;rows.forEach(function(r){var n=num(r.q);if(n>0)q+=n});
+  $('tq').textContent=q?'جمع تعداد: '+F(q):'';
+  var r=compute(),o=$('out');
+  if(!r){o.innerHTML='';return;}
+  if(r.err){o.innerHTML='<div class="err">'+r.err+'</div>';return;}
+  var net=r.fin*(1-r.f/100)-r.unit-r.extra;
+  o.innerHTML='<div class="res"><div class="lbl" style="margin:0">قیمت پیشنهادی فروش هر عدد (تومان)</div><div class="big">'+F(r.fin)+'</div><div class="rows">'+
+    row('قیمت خرید هر عدد',F(r.unit))+row('+ سود '+esc(r.m)+'٪ ← قیمت با سود',F(r.p1))+
+    row('+ پست و هزینه جانبی هر عدد',F(r.extra))+row('+ کارمزد '+esc(r.f)+'٪ (روی قیمت نهایی) ← قیمت فروش',F(r.fin))+row('سود خالص هر عدد (بعد از کارمزد)',F(net))+row('سود کل '+F(r.q)+' عدد',F(net*r.q))+'</div></div>';
+}
+function clearForm(){
+  editId=null;rows=[{s:'',c:'',q:''}];
+  ['code','name','color','price','ship','extra'].forEach(function(i){$(i).value=''});
+  $('code').placeholder='خودکار ('+nextCode()+')';
+  $('margin').value=S.m!=null?S.m:'20';$('fee').value=S.f!=null?S.f:'15';
+  initDate();setMode('unit');renderRows();$('save').textContent='ذخیره محصول';$('msg').textContent='';calc();
+}
+
+// ---- تاریخچهٔ فروش ----
+function feu(e){return e.p*e.f/100}
+function pf(e){return e.n*(e.p-feu(e)-e.c)}
+function byItem(){var m={};log.forEach(function(e){var o=m[e.iid]||(m[e.iid]={n:0,p:0});o.n+=e.n;o.p+=pf(e)});return m}
+function zl(z){return Object.keys(z||{}).map(function(k){var p=k.split('|');return esc((p[0]+(p[1]?' '+p[1]:'')))+'×'+z[k]}).join('، ')}
+function remOf(it){var r=0;it.sizes.forEach(function(z){r+=left(it,z)});return r}
+function mt(it){if(!qry)return true;return nz(it.name+' '+(it.code||'')+' '+it.sizes.map(function(z){return z.s+' '+(z.c||'')}).join(' ')).indexOf(qry)>=0}
+function fl(it){if(flt==='all')return true;var r=remOf(it);return flt==='in'?r>0:r<=0}
+
+function card(it,st){
+  var tot=0,rem=0;
+  var chips=it.sizes.map(function(z){var r=left(it,z);tot+=z.q;rem+=r;return '<span class="chip'+(r<=0?' z':'')+'">'+esc(z.s)+(z.c?' '+esc(z.c):'')+': <b>'+r+'</b> / '+z.q+'</span>'}).join('');
+  var id=esc(it.id);
+  var h='<div class="card'+(rem<=0?' so':'')+'"><div class="t"><span>'+esc(it.name)+' <span class="cd">#'+esc(it.code)+'</span></span><span style="direction:ltr">'+F(it.sug)+'</span></div>'+
+   '<div class="d">'+esc(it.date)+' • خرید '+tot+' • موجودی <b>'+rem+'</b>'+(rem<=0?' • <b style="color:var(--warn)">تمام شد</b>':'')+'</div>'+
+   '<div class="d">قیمت خرید '+F(it.pin)+(it.mode==='total'?' (کلی)':' (تکی)')+' • پست کل '+F(it.ship||0)+' • جانبی هر عدد '+F(it.extra||0)+' • سود '+esc(it.m)+'٪ • کارمزد '+esc(it.f)+'٪</div>'+
+   '<div class="chips">'+chips+'</div>'+(st&&st.n?'<div class="d">فروخته: '+st.n+' • '+(st.p>=0?'سود':'زیان')+' تا الان: <b style="color:'+(st.p>=0?'var(--accent)':'var(--warn)')+'">'+F(Math.abs(st.p))+'</b></div>':'');
+  if(openSell===it.id){
+    h+='<div class="sell"><div class="lbl">تعداد فروش از هر سایز</div>'+it.sizes.map(function(z){
+      return '<div class="sr"><span>'+esc(z.s)+(z.c?' '+esc(z.c):'')+' (موجود '+left(it,z)+')</span><input class="n" data-sz="'+esc(ky(z))+'" inputmode="numeric" placeholder="0"></div>';
+    }).join('')+'<label>قیمت فروش هر عدد (هزینه تمام‌شده: '+F(costOf(it))+')</label><input class="n" id="sp" inputmode="decimal" value="'+esc(it.sug)+'"><div class="d" id="shn" style="font-size:15px;font-weight:600"></div><div class="err" id="sm"></div><div class="btns"><button class="p" data-ok="'+id+'">ثبت فروش</button></div></div>';
+  }
+  h+='<div class="a">'+(st&&st.n?'<button data-u="'+id+'">'+(undoArm===it.id?'مطمئنی؟ دوباره بزن':'لغو آخرین فروش')+'</button>':'')+(rem>0?'<button data-sell="'+id+'">'+(openSell===it.id?'بستن':'فروش')+'</button>':'')+'<button data-e="'+id+'">ویرایش</button><button data-d="'+id+'">'+(delArm===it.id?'مطمئنی؟ (تاریخچه فروش می‌ماند)':'حذف')+'</button></div></div>';
+  return h;
+}
+function render(){
+  var st=byItem(),nIn=0,nOut=0;
+  items.forEach(function(it){if(remOf(it)>0)nIn++;else nOut++});
+  $('f1').textContent='همه ('+items.length+')';$('f2').textContent='موجود ('+nIn+')';$('f3').textContent='تمام‌شده ('+nOut+')';
+  $('f1').className=flt==='all'?'on':'';$('f2').className=flt==='in'?'on':'';$('f3').className=flt==='out'?'on':'';
+  var vis=items.slice().reverse().filter(function(it){return mt(it)&&fl(it)});
+  $('list').innerHTML=vis.length?vis.map(function(it){return card(it,st[it.id])}).join(''):items.length?'<div class="card empty">موردی پیدا نشد.</div>':'<div class="card empty">هنوز محصولی ذخیره نکرده‌ای.</div>';
+  sellHint();
+  if(!showRep){$('rep').innerHTML='';return;}
+  var t=0,o='<div class="card"><div class="rg h"><span>محصول</span><span>رنگ</span><span>سایز</span><span>موجودی</span></div>';
+  items.forEach(function(it){it.sizes.forEach(function(z){var r=left(it,z);t+=r;
+    o+='<div class="rg'+(r<=0?' z':'')+'"><span>'+esc(it.name)+' <span class="cd">#'+esc(it.code)+'</span></span><span>'+esc(z.c||'-')+'</span><span>'+esc(z.s)+'</span><b>'+r+'</b></div>'})});
+  $('rep').innerHTML=o+'<div class="rg h"><b>جمع کل</b><span></span><span></span><b style="color:var(--text);font-size:18px">'+t+'</b></div></div>';
+}
+
+$('rows').oninput=function(e){var i=e.target.getAttribute('data-i');if(i==null)return;var k=e.target.getAttribute('data-k');if(k==='q'){var l1=lat(e.target.value);if(l1!==e.target.value)e.target.value=l1}rows[i][k]=e.target.value;$('msg').textContent='';calc()};
+$('rows').onclick=function(e){var x=e.target.getAttribute('data-x');if(x==null)return;rows.splice(+x,1);if(!rows.length)rows=[{s:'',c:'',q:''}];renderRows();calc()};
+$('addrow').onclick=function(){rows.push({s:'',c:'',q:''});renderRows()};
+$('m1').onclick=function(){setMode('unit')};$('m2').onclick=function(){setMode('total')};
+$('repbtn').onclick=function(){showRep=!showRep;$('repbtn').textContent=showRep?'بستن گزارش':'گزارش موجودی کل';render()};
+$('reset').onclick=clearForm;
+['price','ship','extra','margin','fee'].forEach(function(i){$(i).oninput=function(){var l0=lat(this.value);if(l0!==this.value)this.value=l0;$('msg').textContent='';
+  if(i==='margin'||i==='fee'){var v=num(this.value);if(!isNaN(v)){S[i==='margin'?'m':'f']=v;try{localStorage.setItem('fc2_set',JSON.stringify(S))}catch(e){}}}calc()}});
+$('code').oninput=function(){$('msg').textContent=''};
+
+$('save').onclick=function(){
+  var r=compute(),name=$('name').value.trim(),msg=$('msg'),map={},sz=[],bad=null;
+  if(!name){msg.textContent='نام محصول را وارد کن.';return}
+  if(!r||r.err){msg.textContent=r&&r.err?r.err:'تعداد سایزها، قیمت خرید و درصد سود را درست وارد کن.';return}
+  rows.forEach(function(x){
+    var n=num(x.q),has=(x.s||'').trim()||(x.c||'').trim();
+    if(bad)return;
+    if(!isNaN(n)&&n>0&&n!==Math.floor(n)){bad='تعداد باید عدد صحیح باشد.';return}
+    if(has&&!(n>0)){bad='تعداد سایز «'+((x.s||'').trim()||(x.c||'').trim())+'» را وارد کن یا ردیفش را پاک کن.';return}
+    if(n>0){var s=(x.s||'').trim()||'-',c=(x.c||'').trim(),k=s+'|'+c;if(!map[k])map[k]={s:s,c:c,q:0};map[k].q+=n}});
+  if(bad){msg.textContent=bad;return}
+  Object.keys(map).forEach(function(k){sz.push(map[k])});
+  var old=items.filter(function(x){return x.id===editId})[0];
+  if(old){var bk=null;Object.keys(old.sold).forEach(function(k){var s=old.sold[k];if(s>0&&(!map[k]||map[k].q<s))bk=[k,s]});
+    if(bk){msg.textContent='«'+bk[0].replace('|',' ').trim()+'» '+bk[1]+' فروش دارد؛ نمی‌شود حذفش کرد، نامش را عوض کرد یا تعدادش را کمتر از فروش رفته گذاشت.';return}}
+  var code=lat($('code').value).trim();
+  if(!code)code=old&&old.code?old.code:nextCode();
+  if(items.some(function(x){return x.id!==editId&&String(x.code).toLowerCase()===code.toLowerCase()})){msg.textContent='این کد برای محصول دیگری استفاده شده.';return}
+  var it={id:editId||String(Date.now()),code:code,name:name,color:'',date:getDate(),sizes:sz,mode:mode,pin:r.p,ship:r.sh,extra:r.ex,m:r.m,f:r.f,sug:r.fin,sold:old?old.sold:{}};
+  if(old){items[items.indexOf(old)]=it;
+    log.forEach(function(e){if(e.iid===it.id){e.nm=it.name;e.cd=it.code}})}
+  else items.push(it);
+  if(persist())toast(old?'به‌روزرسانی شد':'محصول ذخیره شد');
+  clearForm();render();pst();
+};
+
+$('list').onclick=function(e){
+  var b=e.target,id,it,wd=delArm,wu=undoArm;delArm=null;undoArm=null;
+  if(b.getAttribute('data-u')){id=b.getAttribute('data-u');if(wu!==id){undoArm=id;render();return}
+    it=items.filter(function(x){return x.id===id})[0];
+    for(var i=log.length-1;i>=0;i--){if(log[i].iid===id){var sl=log.splice(i,1)[0];
+      if(it)Object.keys(sl.z||{}).forEach(function(k){it.sold[k]=Math.max(0,(it.sold[k]||0)-sl.z[k])});
+      persist();toast('آخرین فروش لغو شد');break}}
+    render();return}
+  if(b.getAttribute('data-sell')){id=b.getAttribute('data-sell');openSell=openSell===id?null:id;render();return}
+  if(b.getAttribute('data-d')){id=b.getAttribute('data-d');
+    if(wd===id){items=items.filter(function(x){return x.id!==id});persist();delArm=null;if(openSell===id)openSell=null;toast('حذف شد. تاریخچه فروش در تب «فروش‌ها» می‌ماند.')}else delArm=id;
+    render();return}
+  if(b.getAttribute('data-e')){
+    id=b.getAttribute('data-e');it=items.filter(function(x){return x.id===id})[0];if(!it)return;
+    tab('c');
+    editId=it.id;$('code').value=it.code||'';$('name').value=it.name;$('color').value='';setDate(it.date);
+    rows=it.sizes.map(function(z){return {s:z.s==='-'?'':z.s,c:z.c||'',q:String(z.q)}});
+    $('price').value=it.pin;$('ship').value=it.ship||'';$('extra').value=it.extra||'';$('margin').value=it.m;$('fee').value=it.f;
+    renderRows();setMode(it.mode);$('save').textContent='به‌روزرسانی';$('msg').textContent='';window.scrollTo(0,0);return}
+  if(b.getAttribute('data-ok')){
+    id=b.getAttribute('data-ok');it=items.filter(function(x){return x.id===id})[0];if(!it)return;
+    var ins=$('list').querySelectorAll('[data-sz]'),sell={},any=false,bad=null,price=num($('sp').value);
+    Array.prototype.forEach.call(ins,function(inp){var n=num(inp.value),s=inp.getAttribute('data-sz');
+      if(n>0){var z=it.sizes.filter(function(y){return ky(y)===s})[0];if(n!==Math.floor(n))bad='تعداد باید عدد صحیح باشد.';else if(!z||n>left(it,z))bad='تعداد بیشتر از موجودی است.';sell[s]=n;any=true}});
+    if(!bad&&(!any||isNaN(price)||price<0))bad='تعداد فروش و قیمت را درست وارد کن.';
+    if(bad){$('sm').textContent=bad;return}
+    var cnt=0;Object.keys(sell).forEach(function(s){it.sold[s]=(it.sold[s]||0)+sell[s];cnt+=sell[s]});
+    log.push({id:uid(),iid:it.id,nm:it.name,cd:it.code||'',d:todayStr(),n:cnt,p:price,c:costOf(it),x:extraOf(it),f:it.f,z:sell});
+    if(persist())toast('فروش ثبت شد');openSell=null;render();
+  }
+};
+function sellHint(){var h=$('shn');if(!h)return;var it=items.filter(function(x){return x.id===openSell})[0];if(!it)return;var p=num($('sp').value);if(isNaN(p)){h.textContent='';return}var u=p*(1-it.f/100)-costOf(it);h.style.color=u>=0?'var(--accent)':'var(--warn)';h.textContent=(u>=0?'سود':'زیان')+' هر عدد با این قیمت: '+F(Math.abs(u))}
+$('list').oninput=function(e){var t=e.target;if(!(t.hasAttribute('data-sz')||t.id==='sp'))return;var l=lat(t.value);if(l!==t.value)t.value=l;sellHint()};
+$('srch').oninput=function(){qry=nz(this.value);render()};
+$('f1').onclick=function(){flt='all';render()};$('f2').onclick=function(){flt='in';render()};$('f3').onclick=function(){flt='out';render()};
+
+// ---- تب‌ها ----
+function tab(t){['c','p','s','b'].forEach(function(k){$('tab'+k.toUpperCase()).hidden=k!==t;$('t'+k).className=k===t?'on':''});
+  if(t==='p')render();if(t==='s')renderS();if(t==='b')renderB();window.scrollTo(0,0)}
+$('tc').onclick=function(){tab('c')};$('tp').onclick=function(){tab('p')};$('ts').onclick=function(){tab('s')};$('tb').onclick=function(){tab('b')};
+
+// ---- فروش‌ها: تاریخچه و آمار ماهانه ----
+function renderS(){
+  $('sv1').className=sv==='h'?'on':'';$('sv2').className=sv==='m'?'on':'';$('hq').hidden=sv!=='h';
+  var o=$('sOut');
+  if(!log.length){o.innerHTML='<div class="card empty">هنوز فروشی ثبت نشده. از تب محصولات دکمه «فروش» را بزن.</div>';return}
+  var t={n:0,r:0,p:0};log.forEach(function(e){t.n+=e.n;t.r+=e.n*e.p;t.p+=pf(e)});
+  var col=function(v){return v>=0?'var(--accent)':'var(--warn)'};
+  var h='<div class="res" style="margin:0 0 10px"><div class="lbl" style="margin:0">'+(t.p>=0?'جمع سود':'جمع زیان')+' ('+F(t.n)+' عدد فروخته‌شده)</div><div class="big" style="color:'+col(t.p)+'">'+F(Math.abs(t.p))+'</div><div class="tq">جمع مبلغ فروش: '+F(t.r)+'</div></div>';
+  if(sv==='m'){
+    var M={};
+    log.forEach(function(e){var k=e.d.slice(0,7),m=M[k]||(M[k]={n:0,r:0,fe:0,c:0,p:0}),rev=e.n*e.p,fe=e.n*feu(e),c=e.n*e.c;
+      m.n+=e.n;m.r+=rev;m.fe+=fe;m.c+=c;m.p+=rev-fe-c});
+    h+=Object.keys(M).sort().reverse().map(function(k){var m=M[k],mo=parseInt(k.slice(5,7),10);
+      return '<div class="card"><div class="t"><span>'+(MN[mo-1]||'')+' '+esc(k.slice(0,4))+'</span><span style="direction:ltr;color:'+col(m.p)+'">'+(m.p>=0?'+':'-')+F(Math.abs(m.p))+'</span></div><div class="rows">'+row('تعداد فروش',F(m.n))+row('مبلغ فروش',F(m.r))+row('کارمزد سایت',F(m.fe))+row('هزینه خرید کالاهای فروخته‌شده',F(m.c))+row(m.p>=0?'سود خالص':'زیان خالص',F(Math.abs(m.p)))+'</div></div>'}).join('');
+    o.innerHTML=h;return;
+  }
+  var L=log.map(function(e,i){return [e,i]}).sort(function(a,b){return a[0].d<b[0].d?1:a[0].d>b[0].d?-1:b[1]-a[1]}).map(function(x){return x[0]});
+  if(sq)L=L.filter(function(e){return nz((e.nm||'')+' '+(e.cd||'')+' '+Object.keys(e.z||{}).join(' ').replace(/\|/g,' ')).indexOf(sq)>=0});
+  if(sq){var f={n:0,p:0};L.forEach(function(e){f.n+=e.n;f.p+=pf(e)});h+='<div class="tq" style="margin:0 0 8px">'+L.length+' فروش • '+F(f.n)+' عدد • '+(f.p>=0?'سود':'زیان')+' '+F(Math.abs(f.p))+'</div>'}
+  h+=L.length?L.map(function(e){var p=pf(e),rev=e.n*e.p;
+    return '<div class="card"><div class="t"><span>'+esc(e.nm||'(حذف‌شده)')+' <span class="cd">#'+esc(e.cd||'-')+'</span></span><span style="direction:ltr;color:'+col(p)+'">'+(p>=0?'+':'-')+F(Math.abs(p))+'</span></div>'+
+     '<div class="d">'+esc(e.d)+' • تعداد '+e.n+' • قیمت فروش هر عدد '+F(e.p)+'</div>'+
+     '<div class="d">'+zl(e.z)+'</div>'+
+     '<div class="d">مبلغ فروش '+F(rev)+' • کارمزد '+F(e.n*feu(e))+' • هزینه خرید '+F(e.n*e.c)+'</div></div>'}).join(''):'<div class="card empty">موردی پیدا نشد.</div>';
+  o.innerHTML=h;
+}
+$('sv1').onclick=function(){sv='h';renderS()};$('sv2').onclick=function(){sv='m';renderS()};
+$('hq').oninput=function(){sq=nz(this.value);renderS()};
+
+// ---- پشتیبان ----
+function bm(t,ok){var e=$('bm');e.textContent=t;e.style.color=ok?'var(--accent)':'var(--warn)'}
+function renderB(){$('bc').textContent=items.length+' محصول • '+log.length+' فروش ثبت‌شده در تاریخچه';pst()}
+$('bk').onclick=function(){
+  try{var blob=new Blob([JSON.stringify({v:3,items:items,log:log,set:S})],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-'+todayStr().replace(/\//g,'-')+'.json';
+  document.body.appendChild(a);a.click();a.remove();bm('فایل پشتیبان ساخته شد. آن را جای امنی نگه دار.',true)}catch(e){bm('ساخت فایل پشتیبان ممکن نشد.',false)}
+};
+$('rs').onclick=function(){$('rf').click()};
+$('rf').onchange=function(){
+  var f=this.files[0];if(!f)return;var rd=new FileReader();
+  rd.onload=function(){try{var d=JSON.parse(rd.result);if(!d||!Array.isArray(d.items))throw 0;
+    var ok=d.items.filter(valid),R={},out=[],have={};
+    ok.forEach(function(x){R[x.id]=1;var i=items.findIndex(function(y){return y.id===x.id});if(i>=0)items[i]=x;else items.push(x)});
+    assignCodes();ok.forEach(function(x){mig(x,out)});
+    log=log.filter(function(e){return !R[e.iid]});log.forEach(function(e){have[e.id]=1});
+    (Array.isArray(d.log)?d.log:[]).concat(out).filter(validE).forEach(function(e){if(!have[e.id]){have[e.id]=1;log.push(e)}});
+    persist();render();renderB();bm('بازیابی شد: '+ok.length+' محصول.',true)}catch(e){bm('این فایل پشتیبان معتبر نیست.',false)}};
+  rd.readAsText(f);this.value='';
+};
+function pst(){try{if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().then(function(g){$('ps').textContent=g?'ذخیره‌سازی دائمی فعال است و مرورگر داده‌ها را خودکار پاک نمی‌کند.':'ذخیره‌سازی دائمی هنوز تأیید نشده. بعد از نصب برنامه و چند بار استفاده فعال می‌شود؛ تا آن موقع پشتیبان بگیر.'})}}catch(e){}}
+pst();
+clearForm();render();
+if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+})();
+</script>
+</body>
+</html>
